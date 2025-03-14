@@ -31,6 +31,9 @@ header {
   padding: 0.5rem 2rem;
   margin-top: 1rem;
   background-color: var(--header-bg);
+  background-image: url('header.png');
+  background-size: cover;
+  background-position: top center;
   margin-bottom: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -40,12 +43,14 @@ header {
   font-size: 1.5rem;
   font-weight: bold;
   color: #f5f0e6;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 
 nav a {
   color: #f5f0e6;
   text-decoration: none;
   margin-left: 1rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
 }
 
 h1 {
