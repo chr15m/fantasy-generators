@@ -22,9 +22,9 @@
    [:h1 "Pick a generator..."]
    
    [:div.cards-container
-    [card "TAVERN NAME" "./tavern-name-generator/card.png" "./tavern-name-generator/"]
-    [card "CHARACTER" "./character-generator/card.png" "./character-generator/"]
-    [card "NPC" "./npc-generator/card.png" "./npc-generator/"]
+    [card "TAVERN NAME" "./tavern-name-generator/card.jpg" "./tavern-name-generator/"]
+    [card "CHARACTER" "./character-generator/card.jpg" "./character-generator/"]
+    [card "NPC" "./npc-generator/card.jpg" "./npc-generator/"]
     ;[card "DUNGEON" "https://placehold.co/300x300/e0e0e0/333?text=Dungeon" "#"]
     ]
    
