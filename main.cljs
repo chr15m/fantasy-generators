@@ -24,7 +24,7 @@
    
    [:div.cards-container
     [card "TAVERN NAME" "./tavern-name-generator/card.png" "./tavern-name-generator/"]
-    [card "CITY" "https://placehold.co/300x300/f5f5dc/333?text=City" "#"]
+    [card "CHARACTER" "./character-generator/card.png" "./character-generator/"]
     [card "VILLAGE" "https://placehold.co/300x300/c8e6c9/333?text=Village" "#"]
     [card "DUNGEON" "https://placehold.co/300x300/e0e0e0/333?text=Dungeon" "#"]
     [card "CHARACTER" "https://placehold.co/300x300/d7ccc8/333?text=Character" "#"]
