@@ -77,7 +77,8 @@
        "Click the button to generate a tavern name")]
     [:button
      {:on-click #(swap! state assoc :tavern-name (generate-tavern-name))}
-     "Generate New Name"]]
+     "Generate New Name"]
+    [:div.attribution "Based on Basalt's Tavern Name Generator"]]
    
    [:a.back-link {:href "../index.html"} "← Back to generators"]
    

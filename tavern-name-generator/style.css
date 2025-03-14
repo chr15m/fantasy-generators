@@ -152,6 +152,13 @@ td {
   font-weight: bold;
 }
 
+.attribution {
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  font-style: italic;
+  color: #666;
+}
+
 button {
   background-color: var(--button-bg);
   color: white;

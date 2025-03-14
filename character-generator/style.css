@@ -92,6 +92,13 @@ h1 {
   font-style: italic;
 }
 
+.attribution {
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  font-style: italic;
+  color: #666;
+}
+
 .character-columns {
   display: flex;
   flex-wrap: wrap;

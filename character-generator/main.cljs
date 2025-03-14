@@ -358,7 +358,8 @@
       [:p "Click the button to generate a random fantasy character"])
     [:button
      {:on-click #(swap! state assoc :character (generate-character))}
-     "Generate New Character"]]
+     "Generate New Character"]
+    [:div.attribution "Based on Alyssa Flynn's character tables"]]
    
    [:a.back-link {:href "../index.html"} "← Back to generators"]
    
