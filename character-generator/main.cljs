@@ -363,7 +363,7 @@
    
    [:a.back-link {:href "../index.html"} "← Back to generators"]
    
-   [:footer [:a {:href "https://mccormick.cx" :style {:color "inherit"}} "Made with 🤖 by Chris McCormick"]]
+   [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]]
    [:div.footer-bg]])
 
 (swap! state assoc :character (generate-character))

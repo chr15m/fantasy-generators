@@ -15,6 +15,10 @@ body {
   color: var(--text-color);
   font-family: 'Palatino', 'Bookman', serif;
   background-image: url('../parchment.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
@@ -22,6 +26,7 @@ main {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  flex: 1;
 }
 
 header {
@@ -43,14 +48,14 @@ header {
   font-size: 1.5rem;
   font-weight: bold;
   color: #f5f0e6;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  text-shadow: 0px 0px 3px rgba(0, 0, 0);
 }
 
 nav a {
   color: #f5f0e6;
   text-decoration: none;
   margin-left: 1rem;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  text-shadow: 0px 0px 3px rgba(0, 0, 0);
 }
 
 h1 {
@@ -177,23 +182,16 @@ footer {
   text-align: center;
   font-size: 0.9rem;
   color: #888;
-  position: relative;
-  z-index: 1;
 }
 
 .footer-bg {
-  position: fixed;
-  bottom: 0;
-  left: 0;
   width: 100%;
-  height: 100px;
-  background-image: url('../header.png');
-  background-size: cover;
+  height: 200px;
+  background-image: url('../decoration.svg');
+  background-repeat: no-repeat;
   background-position: bottom center;
-  opacity: 0.6;
-  z-index: -1;
-  mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%);
+  background-size: contain;
+  margin-top: 2rem;
 }
 
 /* Responsive adjustments */

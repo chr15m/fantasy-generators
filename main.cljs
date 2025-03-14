@@ -28,7 +28,7 @@
     ;[card "DUNGEON" "https://placehold.co/300x300/e0e0e0/333?text=Dungeon" "#"]
     ]
    
-   [:footer [:a {:href "https://mccormick.cx" :style {:color "inherit"}} "Made with 🤖 by Chris McCormick"]]
+   [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]]
    [:div.footer-bg]])
 
 (rdom/render [app] (.getElementById js/document "app"))
