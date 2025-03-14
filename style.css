@@ -1,9 +1,11 @@
 :root {
-  --bg-color: #2d2d2d;
-  --text-color: #e0e0e0;
+  --bg-color: #f5f0e6;
+  --text-color: #5d1a0f;
   --card-bg: #e2e2d5;
-  --card-text: #333;
-  --header-bg: #1a1a1a;
+  --card-text: #5d1a0f;
+  --header-bg: #8b4513;
+  --button-bg: #8b4513;
+  --button-hover: #5d1a0f;
 }
 
 body { 
@@ -11,7 +13,8 @@ body {
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Palatino', 'Bookman', serif;
+  background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
 }
 
 main {
@@ -28,15 +31,18 @@ header {
   padding: 1rem;
   background-color: var(--header-bg);
   margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .title {
   font-size: 1.5rem;
   font-weight: bold;
+  color: #f5f0e6;
 }
 
 nav a {
-  color: var(--text-color);
+  color: #f5f0e6;
   text-decoration: none;
   margin-left: 1rem;
 }
