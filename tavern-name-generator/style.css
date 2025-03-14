@@ -14,7 +14,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: 'Palatino', 'Bookman', serif;
-  background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+  background-image: url('../parchment.png');
 }
 
 main {
@@ -202,6 +202,23 @@ footer {
   text-align: center;
   font-size: 0.9rem;
   color: #888;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-bg {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-image: url('../header.png');
+  background-size: cover;
+  background-position: bottom center;
+  opacity: 0.6;
+  z-index: -1;
+  mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0) 100%);
 }
 
 /* Responsive adjustments */

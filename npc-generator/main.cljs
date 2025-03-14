@@ -241,7 +241,8 @@
    
    [:a.back-link {:href "../index.html"} "← Back to generators"]
    
-   [:footer [:a {:href "https://mccormick.cx" :style {:color "inherit"}} "Made with 🤖 by Chris McCormick"]]])
+   [:footer [:a {:href "https://mccormick.cx" :style {:color "inherit"}} "Made with 🤖 by Chris McCormick"]]
+   [:div.footer-bg]])
 
 (swap! state assoc :npc (generate-npc))
 (rdom/render [app] (.getElementById js/document "app"))
