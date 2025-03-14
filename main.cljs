@@ -23,7 +23,7 @@
    [:h1 "Pick a generator..."]
    
    [:div.cards-container
-    [card "TAVERN NAME" "https://placehold.co/300x300/e2e2d5/333?text=Tavern" "tavern-name-generator"]
+    [card "TAVERN NAME" "./tavern-name-generator/card.png" "./tavern-name-generator/"]
     [card "CITY" "https://placehold.co/300x300/f5f5dc/333?text=City" "#"]
     [card "VILLAGE" "https://placehold.co/300x300/c8e6c9/333?text=Village" "#"]
     [card "DUNGEON" "https://placehold.co/300x300/e0e0e0/333?text=Dungeon" "#"]
