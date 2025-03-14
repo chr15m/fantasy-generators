@@ -3,7 +3,7 @@
   --text-color: #5d1a0f;
   --card-bg: #e2e2d5;
   --card-text: #5d1a0f;
-  --header-bg: #8b4513;
+  --h7eader-bg: #8b4513;
   --button-bg: #8b4513;
   --button-hover: #5d1a0f;
 }
@@ -36,7 +36,7 @@ header {
   padding: 0.5rem 2rem;
   margin-top: 1rem;
   background-color: var(--header-bg);
-  background-image: url('../header.png');
+  background-image: url('../header.jpg');
   background-size: cover;
   background-position: top center;
   margin-bottom: 2rem;
