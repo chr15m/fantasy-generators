@@ -223,10 +223,9 @@
 (defn app []
   [:main
    [:header
-    [:div.title "Fantasy Generator"]
+    [:div.title [:a {:href "../" :style {:color "inherit" :text-decoration "none"}} "Fantasy Generators"]]
     [:nav
-     [:a {:href "#"} "News"]
-     [:a {:href "#"} "FAQ"]]]
+     [:a {:href "mailto:chris@mccormick.cx"} "Contact"]]]
    
    [:h1 "Random NPC Generator"]
    
@@ -242,7 +241,7 @@
    
    [:a.back-link {:href "../index.html"} "← Back to generators"]
    
-   [:footer "© 2025 Fantasy Generator"]])
+   [:footer [:a {:href "https://mccormick.cx" :style {:color "inherit"}} "Made with 🤖 by Chris McCormick"]]])
 
 (swap! state assoc :npc (generate-npc))
 (rdom/render [app] (.getElementById js/document "app"))
