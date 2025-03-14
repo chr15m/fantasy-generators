@@ -28,7 +28,8 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem 2rem;
+  margin-top: 1rem;
   background-color: var(--header-bg);
   margin-bottom: 2rem;
   border-radius: 8px;
@@ -52,10 +53,15 @@ h1 {
 }
 
 .cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2rem;
   margin: 2rem 0;
+}
+
+.card {
+  flex: 0 0 300px;
 }
 
 .card {

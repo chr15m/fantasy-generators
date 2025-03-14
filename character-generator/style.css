@@ -28,7 +28,8 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem 2rem;
+  margin-top: 1rem;
   background-color: var(--header-bg);
   margin-bottom: 2rem;
   border-radius: 8px;
