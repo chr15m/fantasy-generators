@@ -3,8 +3,6 @@
     [reagent.core :as r]
     [reagent.dom :as rdom]))
 
-(defonce state (r/atom {:tavern-name "The Drunken Dragon"}))
-
 ;; Original adjectives and nouns from the HTML version
 (def adjectives
   ["Drunken" "Prancing" "Jolly" "Sleeping" "Laughing" "Dancing" 
@@ -59,6 +57,9 @@
   (if (< (js/Math.random) 0.5)
     (generate-tavern-name-simple)
     (generate-tavern-name-complex)))
+
+;; Initialize with a random tavern name
+(defonce state (r/atom {:tavern-name (generate-tavern-name)}))
 
 (defn app []
   [:main
