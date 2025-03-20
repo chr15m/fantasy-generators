@@ -4,7 +4,17 @@
     [reagent.dom :as rdom]))
 
 (defonce state (r/atom {:npc nil
-                        :rolls nil}))
+                        :rolls nil
+                        :embed-mode (boolean (re-find #"[?&]embed" (.-search js/location)))
+                        :copied false}))
+
+(defn copy-to-clipboard [text]
+  (let [el (.createElement js/document "textarea")]
+    (set! (.-value el) text)
+    (.appendChild (.-body js/document) el)
+    (.select el)
+    (.execCommand js/document "copy")
+    (.removeChild (.-body js/document) el)))
 
 ;; NPC generation data based on the DNDSpeak table
 (def race-table
@@ -130,21 +140,21 @@
         personality-roll (random-int 20)
         characteristic-roll (random-int 20)
         speech-roll (random-int 20)
-        
+
         race (:race (get-table-result race-table race-roll))
         occupation (:occupation (get-table-result occupation-table occupation-roll))
         personality (:personality (get-table-result personality-table personality-roll))
         characteristic (:characteristic (get-table-result characteristic-table characteristic-roll))
         speech (:speech (get-table-result speech-table speech-roll))
-        
+
         rolls {:race race-roll
                :occupation occupation-roll
                :personality personality-roll
                :characteristic characteristic-roll
                :speech speech-roll}]
-    
+
     (swap! state assoc :rolls rolls)
-    
+
     {:race race
      :occupation occupation
      :personality personality
@@ -153,7 +163,7 @@
 
 (defn generate-description [npc]
   (let [{:keys [race occupation personality characteristic speech]} npc]
-    (str "A " personality " " race " " occupation " who " 
+    (str "A " personality " " race " " occupation " who "
          (case characteristic
            "Muscular" "has an impressive physique"
            "Lots of tattoos" "is covered in intricate tattoos"
@@ -175,8 +185,8 @@
            "Always sketching" "is frequently drawing in a small notebook"
            "Loves gambling" "can't resist a bet or game of chance"
            "Attractive" "has striking, memorable features"
-           "has a notable physical trait") 
-         " and speaks with " 
+           "has a notable physical trait")
+         " and speaks with "
          (case speech
            "High-pitched" "a surprisingly high-pitched voice"
            "Excited" "constant excitement in their voice"
@@ -198,7 +208,7 @@
            "Booming voice" "a booming voice that carries far"
            "Never tells truth" "convincing lies, never the truth"
            "Third person" "odd third-person references to themselves"
-           "a distinctive speech pattern") 
+           "a distinctive speech pattern")
          ".")))
 
 (defn npc-trait [label value]
@@ -209,40 +219,55 @@
 (defn npc-sheet [npc]
   [:div.npc-sheet
    [:h2 "Random NPC"]
-   
+
    [npc-trait "Race" (:race npc)]
    [npc-trait "Occupation" (:occupation npc)]
    [npc-trait "Personality" (:personality npc)]
    [npc-trait "Characteristic" (:characteristic npc)]
    [npc-trait "Speech" (:speech npc)]
-   
+
    [:div.npc-description (generate-description npc)]
-   
+
    [:div.attribution "Based on DNDSpeak's Random NPC Generator"]])
 
 (defn app []
-  [:main
-   [:header
-    [:div.title [:a {:href "../" :style {:color "inherit" :text-decoration "none"}} "Fantasy Generators"]]
-    [:nav
-     [:a {:href "mailto:chris@mccormick.cx"} "Contact"]]]
-   
-   [:h1 "Random NPC Generator"]
-   
-   [:div.generator-container
-    (if-let [npc (:npc @state)]
-      [npc-sheet npc]
-      [:div
-       [:p "Your players are walking through a city and decide to talk to a random person on the street. Use this generator to create an interesting NPC that would be much more memorable than just a generic peasant!"]
-       [:p "Click the button to generate a random NPC."]])
-    [:button
-     {:on-click #(swap! state assoc :npc (generate-npc))}
-     "Generate New NPC"]]
-   
-   [:a.back-link {:href "../index.html"} "← Back to generators"]
-   
-   [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]]
-   [:div.footer-bg]])
+  (let [embed-mode (:embed-mode @state)]
+    [:main {:class (when embed-mode "embed-mode")}
+     (when-not embed-mode
+       [:header
+        [:div.title [:a {:href "../" :style {:color "inherit" :text-decoration "none"}} "Fantasy Generators"]]
+        [:nav
+         [:a {:href "mailto:chris@mccormick.cx"} "Contact"]]])
+
+     (when-not embed-mode
+       [:h1 "Random NPC Generator"])
+
+     [:div.generator-container
+      (if-let [npc (:npc @state)]
+        [npc-sheet npc]
+        (when-not embed-mode
+          [:div
+           [:p "Your players are walking through a city and decide to talk to a random person on the street. Use this generator to create an interesting NPC that would be much more memorable than just a generic peasant!"]
+           [:p "Click the button to generate a random NPC."]]))
+      [:div.generator-buttons
+       [:button
+        {:on-click #(swap! state assoc :npc (generate-npc))}
+        "Generate New NPC"]
+       (when-not embed-mode
+         [:button.embed-btn
+          {:on-click (fn []
+                       (copy-to-clipboard (str (.-origin js/location) (.-pathname js/location) "?embed"))
+                       (swap! state assoc :copied true)
+                       (js/setTimeout #(swap! state assoc :copied false) 2000))}
+          (if (:copied @state) "Copied!" "Copy Embed URL")])]]
+
+     (when-not embed-mode
+       [:a.back-link {:href "../index.html"} "← Back to generators"])
+
+     (when-not embed-mode
+       [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]])
+     (when-not embed-mode
+       [:div.footer-bg])]))
 
 (swap! state assoc :npc (generate-npc))
 (rdom/render [app] (.getElementById js/document "app"))

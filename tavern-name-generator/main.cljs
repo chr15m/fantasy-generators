@@ -5,7 +5,7 @@
 
 ;; Original adjectives and nouns from the HTML version
 (def adjectives
-  ["Drunken" "Prancing" "Jolly" "Sleeping" "Laughing" "Dancing" 
+  ["Drunken" "Prancing" "Jolly" "Sleeping" "Laughing" "Dancing"
    "Thirsty" "Rusty" "Golden" "Silver" "Copper" "Iron" "Brass"
    "Broken" "Wandering" "Howling" "Whispering" "Roaring" "Silent"])
 
@@ -15,7 +15,7 @@
    "Pony" "Stag" "Wolf" "Lion" "Eagle" "Raven" "Crow" "Fox"])
 
 ;; Additional words from the ClojureScript version
-(def first-words 
+(def first-words
   {1 "The" 2 "The" 3 "The" 4 "Ye Olde"})
 
 (def second-words
@@ -59,31 +59,56 @@
     (generate-tavern-name-complex)))
 
 ;; Initialize with a random tavern name
-(defonce state (r/atom {:tavern-name (generate-tavern-name)}))
+(defonce state (r/atom {:tavern-name (generate-tavern-name)
+                        :embed-mode (boolean (re-find #"[?&]embed" (.-search js/location)))}))
+
+(defn copy-to-clipboard [text]
+  (let [el (.createElement js/document "textarea")]
+    (set! (.-value el) text)
+    (.appendChild (.-body js/document) el)
+    (.select el)
+    (.execCommand js/document "copy")
+    (.removeChild (.-body js/document) el)))
 
 (defn app []
-  [:main
-   [:header
-    [:div.title [:a {:href "../" :style {:color "inherit" :text-decoration "none"}} "Fantasy Generators"]]
-    [:nav
-     [:a {:href "mailto:chris@mccormick.cx"} "Contact"]]]
-   
-   [:h1 "Tavern Name Generator"]
-   
-   [:div.generator-container
-    [:p "Your random tavern name is:"]
-    [:div.tavern-name 
-     (if-let [name (:tavern-name @state)]
-       name
-       "Click the button to generate a tavern name")]
-    [:button
-     {:on-click #(swap! state assoc :tavern-name (generate-tavern-name))}
-     "Generate New Name"]
-    [:div.attribution "Based on Basalt's Tavern Name Generator"]]
-   
-   [:a.back-link {:href "../index.html"} "← Back to generators"]
-   
-   [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]]
-   [:div.footer-bg]])
+  (let [embed-mode (:embed-mode @state)]
+    [:main {:class (when embed-mode "embed-mode")}
+     (when-not embed-mode
+       [:header
+        [:div.title [:a {:href "../" :style {:color "inherit" :text-decoration "none"}} "Fantasy Generators"]]
+        [:nav
+         [:a {:href "mailto:chris@mccormick.cx"} "Contact"]]])
+
+     (when-not embed-mode
+       [:h1 "Tavern Name Generator"])
+
+     [:div.generator-container
+      (when-not embed-mode
+        [:p "Your random tavern name is:"])
+      [:div.tavern-name
+       (if-let [name (:tavern-name @state)]
+         name
+         "Click the button to generate a tavern name")]
+      [:div.generator-buttons
+       [:button
+        {:on-click #(swap! state assoc :tavern-name (generate-tavern-name))}
+        "Generate New Name"]
+       (when-not embed-mode
+         [:button.embed-btn
+          {:on-click (fn []
+                       (copy-to-clipboard (str (.-origin js/location) (.-pathname js/location) "?embed"))
+                       (swap! state assoc :copied true)
+                       (js/setTimeout #(swap! state assoc :copied false) 2000))}
+          (if (:copied @state) "Copied!" "Copy Embed URL")])]
+      (when-not embed-mode
+        [:div.attribution "Based on Basalt's Tavern Name Generator"])]
+
+     (when-not embed-mode
+       [:a.back-link {:href "../index.html"} "← Back to generators"])
+
+     (when-not embed-mode
+       [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]])
+     (when-not embed-mode
+       [:div.footer-bg])]))
 
 (rdom/render [app] (.getElementById js/document "app"))

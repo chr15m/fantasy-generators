@@ -3,7 +3,17 @@
     [reagent.core :as r]
     [reagent.dom :as rdom]))
 
-(defonce state (r/atom {:character nil}))
+(defonce state (r/atom {:character nil
+                        :embed-mode (boolean (re-find #"[?&]embed" (.-search js/location)))
+                        :copied false}))
+
+(defn copy-to-clipboard [text]
+  (let [el (.createElement js/document "textarea")]
+    (set! (.-value el) text)
+    (.appendChild (.-body js/document) el)
+    (.select el)
+    (.execCommand js/document "copy")
+    (.removeChild (.-body js/document) el)))
 
 ;; Character generation data based on the tables
 (def age-table
@@ -344,27 +354,42 @@
       [:div.trait-value (clojure.string/join ", " (:traits character))]]]]])
 
 (defn app []
-  [:main
-   [:header
-    [:div.title [:a {:href "../" :style {:color "inherit" :text-decoration "none"}} "Fantasy Generators"]]
-    [:nav
-     [:a {:href "mailto:chris@mccormick.cx"} "Contact"]]]
-   
-   [:h1 "Character Generator"]
-   
-   [:div.generator-container
-    (if-let [character (:character @state)]
-      [character-sheet character]
-      [:p "Click the button to generate a random fantasy character"])
-    [:button
-     {:on-click #(swap! state assoc :character (generate-character))}
-     "Generate New Character"]
-    [:div.attribution "Based on Alyssa Flynn's character tables"]]
-   
-   [:a.back-link {:href "../index.html"} "← Back to generators"]
-   
-   [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]]
-   [:div.footer-bg]])
+  (let [embed-mode (:embed-mode @state)]
+    [:main {:class (when embed-mode "embed-mode")}
+     (when-not embed-mode
+       [:header
+        [:div.title [:a {:href "../" :style {:color "inherit" :text-decoration "none"}} "Fantasy Generators"]]
+        [:nav
+         [:a {:href "mailto:chris@mccormick.cx"} "Contact"]]])
+
+     (when-not embed-mode
+       [:h1 "Character Generator"])
+
+     [:div.generator-container
+      (if-let [character (:character @state)]
+        [character-sheet character]
+        [:p "Click the button to generate a random fantasy character"])
+      [:div.generator-buttons
+       [:button
+        {:on-click #(swap! state assoc :character (generate-character))}
+        "Generate New Character"]
+       (when-not embed-mode
+         [:button.embed-btn
+          {:on-click (fn []
+                       (copy-to-clipboard (str (.-origin js/location) (.-pathname js/location) "?embed"))
+                       (swap! state assoc :copied true)
+                       (js/setTimeout #(swap! state assoc :copied false) 2000))}
+          (if (:copied @state) "Copied!" "Copy Embed URL")])]
+      (when-not embed-mode
+        [:div.attribution "Based on Alyssa Flynn's character tables"])]
+
+     (when-not embed-mode
+       [:a.back-link {:href "../index.html"} "← Back to generators"])
+
+     (when-not embed-mode
+       [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]])
+     (when-not embed-mode
+       [:div.footer-bg])]))
 
 (swap! state assoc :character (generate-character))
 (rdom/render [app] (.getElementById js/document "app"))
