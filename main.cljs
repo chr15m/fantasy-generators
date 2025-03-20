@@ -22,15 +22,7 @@
    {:on-click #(js/window.location.assign link)
     :class (when (= title (:selected @state)) "selected")}
    [:div.card-image [:img {:src image-url :alt title}]]
-   [:div.card-title title]
-   [:div.card-embed
-    [:button.embed-btn
-     {:on-click (fn [e]
-                  (.stopPropagation e)
-                  (copy-to-clipboard (get-embed-url link))
-                  (swap! state assoc :copied title)
-                  (js/setTimeout #(swap! state assoc :copied false) 2000))}
-     (if (= title (:copied @state)) "Copied!" "Embed")]]])
+   [:div.card-title title]])
 
 (defn app []
   [:main
