@@ -226,9 +226,7 @@
    [npc-trait "Characteristic" (:characteristic npc)]
    [npc-trait "Speech" (:speech npc)]
 
-   [:div.npc-description (generate-description npc)]
-
-   [:div.attribution "Based on DNDSpeak's Random NPC Generator"]])
+   [:div.npc-description (generate-description npc)]])
 
 (defn app []
   (let [embed-mode (:embed-mode @state)]
@@ -252,14 +250,17 @@
       [:div.generator-buttons
        [:button
         {:on-click #(swap! state assoc :npc (generate-npc))}
-        "Generate New NPC"]
-       (when-not embed-mode
-         [:button.embed-btn
+        "Generate New NPC"]]
+      (when-not embed-mode
+        [:div.attribution "Based on DNDSpeak's Random NPC Generator"])
+      (when-not embed-mode
+        [:div.embed-link
+         [:button.embed-btn-small
           {:on-click (fn []
                        (copy-to-clipboard (str (.-origin js/location) (.-pathname js/location) "?embed"))
                        (swap! state assoc :copied true)
                        (js/setTimeout #(swap! state assoc :copied false) 2000))}
-          (if (:copied @state) "Copied!" "Copy Embed URL")])]]
+          (if (:copied @state) "Copied!" "Embed")]])]
 
      (when-not embed-mode
        [:a.back-link {:href "../index.html"} "← Back to generators"])
