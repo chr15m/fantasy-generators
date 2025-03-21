@@ -194,16 +194,22 @@ footer {
 /* Embed mode styles */
 .embed-mode {
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
   max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .embed-mode .generator-container {
-  margin: 0;
+  margin: 0 auto;
   box-shadow: none;
   border-radius: 0;
   background-image: none;
   background-color: transparent;
+  width: 100%;
+  max-width: 800px;
 }
 
 /* Responsive adjustments */
