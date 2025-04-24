@@ -3,7 +3,7 @@
     [reagent.core :as r]
     [reagent.dom :as rdom]))
 
-(defonce state (r/atom {:room-description nil
+(defonce state (r/atom {:room-elements nil
                         :embed-mode (boolean (re-find #"[?&]embed" (.-search js/location)))
                         :copied false}))
 
@@ -20,164 +20,96 @@
   ["tiny" "small" "modest" "medium-sized" "large" "spacious" "vast" "enormous" "cavernous" "colossal"])
 
 (def room-shapes
-  ["square" "rectangular" "circular" "oval" "hexagonal" "octagonal" "triangular" "irregularly shaped" 
+  ["square" "rectangular" "circular" "oval" "hexagonal" "octagonal" "triangular" "irregularly shaped"
    "L-shaped" "cross-shaped" "dome-shaped" "vaulted" "narrow" "wide" "elongated"])
 
 (def room-adjectives
-  ["damp" "musty" "dark" "dimly lit" "well-lit" "shadowy" "gloomy" "eerie" "foreboding" "ancient" 
-   "decrepit" "crumbling" "pristine" "ornate" "plain" "simple" "elaborate" "mysterious" "forgotten" 
-   "abandoned" "haunting" "cold" "warm" "hot" "freezing" "dusty" "clean" "tidy" "messy" "cluttered" 
-   "barren" "empty" "hollow" "echoing" "silent" "quiet" "noisy" "rumbling" "vibrating" "still" 
-   "peaceful" "chaotic" "orderly" "symmetrical" "asymmetrical" "uneven" "smooth" "rough" "jagged" 
-   "worn" "weathered" "polished" "gleaming" "shimmering" "glowing" "dark" "bright" "colorful" "dull" 
-   "faded" "vibrant" "muted" "stark" "bleak" "dreary" "cheerful" "somber" "solemn" "sacred" 
-   "profane" "unholy" "blessed" "cursed" "enchanted" "magical" "mundane" "ordinary" "extraordinary" 
-   "remarkable" "unremarkable" "distinctive" "nondescript" "featureless" "detailed" "intricate" 
-   "simple" "complex" "puzzling" "straightforward" "confusing" "disorienting" "familiar" "strange" 
-   "alien" "otherworldly" "natural" "unnatural" "artificial" "constructed" "carved" "hewn" "built" 
-   "grown" "formed" "shaped" "molded" "crafted" "designed" "planned" "haphazard" "random" "chaotic" 
-   "ordered" "structured" "patterned" "decorated" "adorned" "embellished" "plain" "unadorned" 
-   "spartan" "luxurious" "opulent" "modest" "humble" "grand" "magnificent" "impressive" "imposing" 
-   "intimidating" "welcoming" "inviting" "forbidding" "threatening" "dangerous" "safe" "secure" 
-   "unstable" "precarious" "solid" "sturdy" "fragile" "delicate" "robust" "weak" "strong" "powerful" 
-   "feeble" "mighty" "insignificant" "important" "central" "peripheral" "isolated" "connected" 
-   "linked" "separated" "divided" "unified" "whole" "fractured" "broken" "intact" "complete" 
-   "partial" "unfinished" "finished" "perfect" "flawed" "damaged" "pristine" "new" "old" "ancient" 
-   "recent" "timeless" "temporary" "permanent" "ephemeral" "enduring" "lasting" "fleeting" 
-   "transient" "stable" "changing" "dynamic" "static" "fixed" "fluid" "rigid" "flexible" "adaptable" 
-   "unyielding" "yielding" "resistant" "susceptible" "vulnerable" "protected" "exposed" "hidden" 
-   "visible" "obvious" "subtle" "nuanced" "clear" "obscured" "veiled" "revealed" "concealed" 
-   "disclosed" "secret" "known" "mysterious" "enigmatic" "puzzling" "straightforward" "complex" 
-   "simple" "elaborate" "intricate" "detailed" "sparse" "minimal" "maximal" "excessive" "moderate" 
-   "balanced" "harmonious" "discordant" "jarring" "soothing" "calming" "disturbing" "unsettling" 
-   "comforting" "reassuring" "alarming" "frightening" "terrifying" "horrifying" "pleasant" 
-   "unpleasant" "agreeable" "disagreeable" "appealing" "unappealing" "attractive" "repulsive" 
-   "beautiful" "ugly" "pretty" "hideous" "grotesque" "elegant" "graceful" "awkward" "clumsy" 
-   "refined" "crude" "sophisticated" "primitive" "advanced" "rudimentary" "basic" "complex" 
-   "intricate" "simple" "plain" "fancy" "ornate" "decorated" "undecorated" "embellished" 
-   "unembellished" "adorned" "unadorned" "garnished" "ungarnished" "trimmed" "untrimmed" 
-   "furnished" "unfurnished" "equipped" "unequipped" "stocked" "unstocked" "filled" "unfilled" 
-   "occupied" "unoccupied" "inhabited" "uninhabited" "populated" "unpopulated" "crowded" 
-   "uncrowded" "busy" "quiet" "noisy" "silent" "loud" "soft" "harsh" "gentle" "rough" "smooth" 
-   "textured" "untextured" "patterned" "unpatterned" "designed" "undesigned" "planned" "unplanned" 
-   "organized" "unorganized" "arranged" "unarranged" "ordered" "disordered" "neat" "messy" "tidy" 
-   "untidy" "clean" "dirty" "spotless" "spotted" "stained" "unstained" "marked" "unmarked" 
-   "scratched" "unscratched" "dented" "undented" "damaged" "undamaged" "broken" "unbroken" 
-   "shattered" "unshattered" "cracked" "uncracked" "split" "unsplit" "torn" "untorn" "ripped" 
-   "unripped" "cut" "uncut" "sliced" "unsliced" "chopped" "unchopped" "hacked" "unhacked" 
-   "severed" "unsevered" "disconnected" "connected" "joined" "disjoined" "attached" "detached" 
-   "fixed" "unfixed" "secured" "unsecured" "fastened" "unfastened" "tied" "untied" "bound" 
-   "unbound" "wrapped" "unwrapped" "covered" "uncovered" "exposed" "unexposed" "revealed" 
-   "unrevealed" "disclosed" "undisclosed" "shown" "unshown" "displayed" "undisplayed" "exhibited" 
-   "unexphibited" "demonstrated" "undemonstrated" "presented" "unpresented" "offered" "unoffered" 
-   "given" "ungiven" "taken" "untaken" "received" "unreceived" "accepted" "unaccepted" "rejected" 
-   "unrejected" "approved" "unapproved" "disapproved" "undisapproved" "endorsed" "unendorsed" 
-   "supported" "unsupported" "backed" "unbacked" "helped" "unhelped" "assisted" "unassisted" 
-   "aided" "unaided" "abetted" "unabetted" "encouraged" "unencouraged" "discouraged" 
-   "undiscouraged" "motivated" "unmotivated" "inspired" "uninspired" "excited" "unexcited" 
-   "stimulated" "unstimulated" "aroused" "unaroused" "awakened" "unawakened" "roused" "unroused" 
-   "stirred" "unstirred" "moved" "unmoved" "touched" "untouched" "affected" "unaffected" 
-   "influenced" "uninfluenced" "swayed" "unswayed" "persuaded" "unpersuaded" "convinced" 
-   "unconvinced" "satisfied" "unsatisfied" "pleased" "unpleased" "displeased" "undispleased" 
-   "happy" "unhappy" "sad" "unsad" "joyful" "unjoyful" "sorrowful" "unsorrowful" "mournful" 
-   "unmournful" "grieving" "ungrieving" "lamenting" "unlamenting" "weeping" "unweeping" "crying" 
-   "uncrying" "sobbing" "unsobbing" "wailing" "unwailing" "moaning" "unmoaning" "groaning" 
-   "ungroaning" "sighing" "unsighing" "breathing" "unbreathing" "living" "unliving" "dead" 
-   "undead" "alive" "unalive" "vital" "unvital" "vibrant" "unvibrant" "energetic" "unenergetic" 
-   "lively" "unlively" "animated" "unanimated" "spirited" "unspirited" "vigorous" "unvigorous" 
-   "robust" "unrobust" "healthy" "unhealthy" "well" "unwell" "ill" "unill" "sick" "unsick" 
-   "diseased" "undiseased" "infected" "uninfected" "contagious" "uncontagious" "infectious" 
-   "uninfectious" "virulent" "unvirulent" "deadly" "undeadly" "lethal" "unlethal" "fatal" 
-   "unfatal" "mortal" "immortal" "deathly" "undeathly" "killing" "unkilling" "murderous" 
-   "unmurderous" "homicidal" "unhomicidal" "suicidal" "unsuicidal" "destructive" "undestructive" 
-   "damaging" "undamaging" "harmful" "unharmful" "injurious" "uninjurious" "hurtful" "unhurtful" 
-   "painful" "unpainful" "agonizing" "unagonizing" "excruciating" "unexcruciating" "torturous" 
-   "untorturous" "tormenting" "untormenting" "distressing" "undistressing" "troubling" 
-   "untroubling" "worrying" "unworrying" "concerning" "unconcerning" "disturbing" "undisturbing" 
-   "unsettling" "unusettling" "disquieting" "undisquieting" "alarming" "unalarming" "frightening" 
-   "unfrightening" "scary" "unscary" "terrifying" "unterrifying" "horrifying" "unhorrifying" 
+  ["damp" "musty" "dark" "dimly lit" "well-lit" "shadowy" "gloomy" "eerie" "foreboding" "ancient"
+   "decrepit" "crumbling" "pristine" "ornate" "plain" "simple" "elaborate" "mysterious" "forgotten"
+   "abandoned" "haunting" "cold" "warm" "hot" "freezing" "dusty" "clean" "tidy" "messy" "cluttered"
+   "barren" "empty" "hollow" "echoing" "silent" "quiet" "noisy" "rumbling" "vibrating" "still"
+   "peaceful" "chaotic" "orderly" "symmetrical" "asymmetrical" "uneven" "smooth" "rough" "jagged"
+   "worn" "weathered" "polished" "gleaming" "shimmering" "glowing" "dark" "bright" "colorful" "dull"
+   "faded" "vibrant" "muted" "stark" "bleak" "dreary" "cheerful" "somber" "solemn" "sacred"
+   "profane" "unholy" "blessed" "cursed" "enchanted" "magical" "mundane" "ordinary" "extraordinary"
+   "remarkable" "unremarkable" "distinctive" "nondescript" "featureless" "detailed" "intricate"
+   "simple" "complex" "puzzling" "straightforward" "confusing" "disorienting" "familiar" "strange"
+   "alien" "otherworldly" "natural" "unnatural" "artificial" "constructed" "carved" "hewn" "built"
+   "grown" "formed" "shaped" "molded" "crafted" "designed" "planned" "haphazard" "random" "chaotic"
+   "ordered" "structured" "patterned" "decorated" "adorned" "embellished" "plain" "unadorned"
+   "spartan" "luxurious" "opulent" "modest" "humble" "grand" "magnificent" "impressive" "imposing"
+   "intimidating" "welcoming" "inviting" "forbidding" "threatening" "dangerous" "safe" "secure"
+   "unstable" "precarious" "solid" "sturdy" "fragile" "delicate" "robust" "weak" "strong" "powerful"
+   "feeble" "mighty" "insignificant" "important" "central" "peripheral" "isolated" "connected"
+   "linked" "separated" "divided" "unified" "whole" "fractured" "broken" "intact" "complete"
+   "partial" "unfinished" "finished" "perfect" "flawed" "damaged" "pristine" "new" "old" "ancient"
+   "recent" "timeless" "temporary" "permanent" "ephemeral" "enduring" "lasting" "fleeting"
+   "transient" "stable" "changing" "dynamic" "static" "fixed" "fluid" "rigid" "flexible" "adaptable"
+   "unyielding" "yielding" "resistant" "susceptible" "vulnerable" "protected" "exposed" "hidden"
+   "visible" "obvious" "subtle" "nuanced" "clear" "obscured" "veiled" "revealed" "concealed"
+   "disclosed" "secret" "known" "mysterious" "enigmatic" "puzzling" "straightforward" "complex"
+   "simple" "elaborate" "intricate" "detailed" "sparse" "minimal" "maximal" "excessive" "moderate"
+   "balanced" "harmonious" "discordant" "jarring" "soothing" "calming" "disturbing" "unsettling"
+   "comforting" "reassuring" "alarming" "frightening" "terrifying" "horrifying" "pleasant"
+   "unpleasant" "agreeable" "disagreeable" "appealing" "unappealing" "attractive" "repulsive"
+   "beautiful" "ugly" "pretty" "hideous" "grotesque" "elegant" "graceful" "awkward" "clumsy"
+   "refined" "crude" "sophisticated" "primitive" "advanced" "rudimentary" "basic" "complex"
+   "intricate" "simple" "plain" "fancy" "ornate" "decorated" "undecorated" "embellished"
+   "unembellished" "adorned" "unadorned" "garnished" "ungarnished" "trimmed" "untrimmed"
+   "furnished" "unfurnished" "equipped" "unequipped" "stocked" "unstocked" "filled" "unfilled"
+   "occupied" "unoccupied" "inhabited" "uninhabited" "populated" "unpopulated" "crowded"
+   "uncrowded" "busy" "quiet" "noisy" "silent" "loud" "soft" "harsh" "gentle" "rough" "smooth"
+   "textured" "untextured" "patterned" "unpatterned" "designed" "undesigned" "planned" "unplanned"
+   "organized" "unorganized" "arranged" "unarranged" "ordered" "disordered" "neat" "messy" "tidy"
+   "untidy" "clean" "dirty" "spotless" "spotted" "stained" "unstained" "marked" "unmarked"
+   "scratched" "unscratched" "dented" "undented" "damaged" "undamaged" "broken" "unbroken"
+   "shattered" "unshattered" "cracked" "uncracked" "split" "unsplit" "torn" "untorn" "ripped"
+   "unripped" "cut" "uncut" "sliced" "unsliced" "chopped" "unchopped" "hacked" "unhacked"
+   "severed" "unsevered" "disconnected" "connected" "joined" "disjoined" "attached" "detached"
+   "fixed" "unfixed" "secured" "unsecured" "fastened" "unfastened" "tied" "untied" "bound"
+   "unbound" "wrapped" "unwrapped" "covered" "uncovered" "exposed" "unexposed" "revealed"
+   "unrevealed" "disclosed" "undisclosed" "shown" "unshown" "displayed" "undisplayed" "exhibited"
+   "unexphibited" "demonstrated" "undemonstrated" "presented" "unpresented" "offered" "unoffered"
+   "given" "ungiven" "taken" "untaken" "received" "unreceived" "accepted" "unaccepted" "rejected"
+   "unrejected" "approved" "unapproved" "disapproved" "undisapproved" "endorsed" "unendorsed"
+   "supported" "unsupported" "backed" "unbacked" "helped" "unhelped" "assisted" "unassisted"
+   "aided" "unaided" "abetted" "unabetted" "encouraged" "unencouraged" "discouraged"
+   "undiscouraged" "motivated" "unmotivated" "inspired" "uninspired" "excited" "unexcited"
+   "stimulated" "unstimulated" "aroused" "unaroused" "awakened" "unawakened" "roused" "unroused"
+   "stirred" "unstirred" "moved" "unmoved" "touched" "untouched" "affected" "unaffected"
+   "influenced" "uninfluenced" "swayed" "unswayed" "persuaded" "unpersuaded" "convinced"
+   "unconvinced" "satisfied" "unsatisfied" "pleased" "unpleased" "displeased" "undispleased"
+   "happy" "unhappy" "sad" "unsad" "joyful" "unjoyful" "sorrowful" "unsorrowful" "mournful"
+   "unmournful" "grieving" "ungrieving" "lamenting" "unlamenting" "weeping" "unweeping" "crying"
+   "uncrying" "sobbing" "unsobbing" "wailing" "unwailing" "moaning" "unmoaning" "groaning"
+   "ungroaning" "sighing" "unsighing" "breathing" "unbreathing" "living" "unliving" "dead"
+   "undead" "alive" "unalive" "vital" "unvital" "vibrant" "unvibrant" "energetic" "unenergetic"
+   "lively" "unlively" "animated" "unanimated" "spirited" "unspirited" "vigorous" "unvigorous"
+   "robust" "unrobust" "healthy" "unhealthy" "well" "unwell" "ill" "unill" "sick" "unsick"
+   "diseased" "undiseased" "infected" "uninfected" "contagious" "uncontagious" "infectious"
+   "uninfectious" "virulent" "unvirulent" "deadly" "undeadly" "lethal" "unlethal" "fatal"
+   "unfatal" "mortal" "immortal" "deathly" "undeathly" "killing" "unkilling" "murderous"
+   "unmurderous" "homicidal" "unhomicidal" "suicidal" "unsuicidal" "destructive" "undestructive"
+   "damaging" "undamaging" "harmful" "unharmful" "injurious" "uninjurious" "hurtful" "unhurtful"
+   "painful" "unpainful" "agonizing" "unagonizing" "excruciating" "unexcruciating" "torturous"
+   "untorturous" "tormenting" "untormenting" "distressing" "undistressing" "troubling"
+   "untroubling" "worrying" "unworrying" "concerning" "unconcerning" "disturbing" "undisturbing"
+   "unsettling" "unusettling" "disquieting" "undisquieting" "alarming" "unalarming" "frightening"
+   "unfrightening" "scary" "unscary" "terrifying" "unterrifying" "horrifying" "unhorrifying"
    "horrific" "unhorrifics"])
 
 (def room-materials
-  ["stone" "marble" "granite" "limestone" "sandstone" "slate" "brick" "wood" "timber" "metal" 
-   "iron" "steel" "copper" "bronze" "brass" "gold" "silver" "crystal" "glass" "ice" "bone" 
-   "obsidian" "clay" "mud" "dirt" "earth" "sand" "rock" "pebble" "gravel" "concrete" "plaster" 
-   "stucco" "mortar" "cement" "adobe" "terracotta" "ceramic" "porcelain" "tile" "mosaic" 
-   "ivory" "shell" "coral" "amber" "jade" "quartz" "diamond" "emerald" "ruby" "sapphire" 
-   "opal" "pearl" "onyx" "agate" "jasper" "turquoise" "lapis lazuli" "malachite" "amethyst" 
-   "topaz" "garnet" "aquamarine" "moonstone" "sunstone" "bloodstone" "hematite" "obsidian" 
-   "flint" "chalk" "coal" "charcoal" "ash" "soot" "dust" "rust" "patina" "verdigris" "tarnish" 
-   "moss" "lichen" "fungus" "mold" "mildew" "rot" "decay" "corruption" "putrefaction" 
-   "decomposition" "dissolution" "disintegration" "erosion" "weathering" "wear" "tear" 
-   "damage" "destruction" "ruin" "devastation" "desolation" "wasteland" "wilderness" "desert" 
-   "tundra" "steppe" "prairie" "savanna" "grassland" "meadow" "field" "pasture" "lawn" 
-   "garden" "park" "forest" "jungle" "rainforest" "swamp" "marsh" "bog" "fen" "mire" "quagmire" 
-   "morass" "slough" "quicksand" "mud" "muck" "slime" "ooze" "goo" "gel" "jelly" "sap" "resin" 
-   "amber" "pitch" "tar" "bitumen" "asphalt" "oil" "grease" "fat" "tallow" "wax" "soap" "foam" 
-   "froth" "bubble" "spray" "mist" "fog" "haze" "smoke" "vapor" "steam" "gas" "air" "wind" 
-   "breeze" "gust" "blast" "gale" "tempest" "storm" "hurricane" "tornado" "cyclone" "whirlwind" 
-   "dust devil" "sandstorm" "blizzard" "snowstorm" "hailstorm" "thunderstorm" "lightning" 
-   "thunder" "rain" "drizzle" "shower" "downpour" "deluge" "flood" "torrent" "stream" "river" 
-   "brook" "creek" "tributary" "estuary" "delta" "lake" "pond" "pool" "puddle" "ocean" "sea" 
-   "bay" "gulf" "strait" "channel" "sound" "fjord" "inlet" "cove" "harbor" "port" "dock" 
-   "pier" "wharf" "jetty" "quay" "marina" "beach" "shore" "coast" "cliff" "bluff" "precipice" 
-   "escarpment" "scarp" "ridge" "crest" "summit" "peak" "mountain" "hill" "mound" "knoll" 
-   "dune" "valley" "dale" "glen" "gorge" "canyon" "ravine" "gully" "gulch" "arroyo" "wash" 
-   "draw" "coulee" "hollow" "depression" "basin" "sink" "sinkhole" "pit" "abyss" "chasm" 
-   "void" "vacuum" "emptiness" "nothingness" "oblivion" "limbo" "purgatory" "hell" "heaven" 
-   "paradise" "utopia" "dystopia" "wasteland" "wilderness" "frontier" "border" "boundary" 
-   "limit" "edge" "brink" "verge" "cusp" "threshold" "doorway" "gateway" "portal" "entrance" 
-   "exit" "passage" "corridor" "hallway" "gallery" "arcade" "colonnade" "portico" "vestibule" 
-   "foyer" "lobby" "atrium" "courtyard" "cloister" "quadrangle" "plaza" "square" "piazza" 
-   "forum" "agora" "market" "bazaar" "souk" "mall" "arcade" "gallery" "museum" "library" 
-   "archive" "repository" "vault" "treasury" "cache" "hoard" "stash" "store" "storehouse" 
-   "warehouse" "depot" "terminal" "station" "port" "harbor" "haven" "refuge" "sanctuary" 
-   "asylum" "retreat" "hideaway" "hideout" "lair" "den" "nest" "burrow" "hole" "cave" 
-   "cavern" "grotto" "crypt" "tomb" "sepulcher" "mausoleum" "catacomb" "ossuary" "charnel" 
-   "morgue" "mortuary" "cemetery" "graveyard" "churchyard" "burial ground" "potter's field" 
-   "necropolis" "city of the dead" "underworld" "netherworld" "afterlife" "beyond" "hereafter" 
-   "eternity" "infinity" "forever" "everlasting" "perpetual" "eternal" "immortal" "undying" 
-   "deathless" "ageless" "timeless" "ancient" "primeval" "primordial" "prehistoric" "antediluvian" 
-   "archaic" "classical" "medieval" "renaissance" "baroque" "rococo" "neoclassical" "romantic" 
-   "victorian" "edwardian" "art nouveau" "art deco" "modernist" "postmodern" "contemporary" 
-   "futuristic" "sci-fi" "cyberpunk" "steampunk" "dieselpunk" "atompunk" "biopunk" "nanopunk" 
-   "solarpunk" "stonepunk" "bronzepunk" "ironpunk" "sandalpunk" "silkpunk" "clockpunk" 
-   "mannerpunk" "mythpunk" "elfpunk" "fairypunk" "dreampunk" "nowpunk" "cattlepunk" "westernpunk" 
-   "desertpunk" "oceanpunk" "icepunk" "islandpunk" "seapunk" "lunarpunk" "spacepunk" "astropunk" 
-   "cosmicpunk" "godpunk" "angelicpunk" "demonpunk" "necropunk" "ghostpunk" "spiritpunk" 
-   "soulpunk" "mindpunk" "psychicpunk" "magicpunk" "wizardpunk" "witchpunk" "alchemypunk" 
-   "elementalpunk" "naturepunk" "treepunk" "flowerpunk" "gardenpunk" "farmerpunk" "foodpunk" 
-   "winepunk" "beerpunk" "meadpunk" "honeypunk" "spicepunk" "herbpunk" "teapunk" "coffeepunk" 
-   "chocolatepunk" "candypunk" "sugarpunk" "saltpunk" "pepperpunk" "vinegarpunk" "oilpunk" 
-   "butterpunk" "cheesepunk" "milkpunk" "creampunk" "icecreampunk" "frozenpunk" "coldpunk" 
-   "hotpunk" "firepunk" "flamepunk" "smokepunk" "ashpunk" "dustpunk" "sandpunk" "dirtpunk" 
-   "mudpunk" "claypunk" "stonepunk" "rockpunk" "crystalpunk" "gemponk" "jewelpunk" "goldpunk" 
-   "silverpunk" "copperpunk" "bronzepunk" "ironpunk" "steelpunk" "metalpunk" "glasspunk" 
-   "woodpunk" "paperpunk" "cardboardpunk" "plasticpunk" "rubberpunk" "leatherpunk" "furpunk" 
-   "woolpunk" "silkpunk" "cottonpunk" "linenpunk" "hemppunk" "jutepunk" "ropepunk" "stringpunk" 
-   "threadpunk" "yarnpunk" "knitpunk" "crochetpunk" "sewpunk" "stitchpunk" "patchpunk" 
-   "quiltpunk" "tapestrypunk" "rugpunk" "carpetpunk" "curtainpunk" "drapepunk" "clothpunk" 
-   "fabricpunk" "textilepunk" "fashionpunk" "costumepunk" "uniformpunk" "armorpunk" "shieldpunk" 
-   "helmetpunk" "swordpunk" "knifepunk" "daggerpunk" "axepunk" "hammerpunk" "maulpunk" 
-   "flailpunk" "whippunk" "staffpunk" "wandpunk" "rodpunk" "polpunk" "spearponk" "lancepunk" 
-   "pikepunk" "halberdpunk" "bowpunk" "arrowpunk" "crossbowpunk" "slingpunk" "stonepunk" 
-   "rockpunk" "brickpunk" "throwpunk" "catchpunk" "ballpunk" "sportpunk" "gamepunk" "playpunk" 
-   "toypunk" "dollpunk" "puppetpunk" "marionettepunk" "ventriloquistpunk" "clownpunk" 
-   "jesterpunk" "foolpunk" "tricksterpunk" "pranksterpunk" "comedypunk" "tragedypunk" 
-   "dramapunk" "theaterpunk" "cinemapunk" "moviepunk" "filmpunk" "videopunk" "tvpunk" 
-   "radiopunk" "phonepunk" "telegraphpunk" "morsepunk" "signalpunk" "flagpunk" "semaphorepunk" 
-   "drummingpunk" "whistlepunk" "hornpunk" "trumpetpunk" "buglpunk" "flutepunk" "pipepunk" 
-   "organpunk" "pianopunk" "guitarponk" "violinpunk" "cellopunk" "harppunk" "lyrepunk" 
-   "lutepunk" "mandolinpunk" "banjoponk" "ukuleleponk" "accordionpunk" "harmonicapunk" 
-   "kazooponk" "whistlepunk" "singingpunk" "choirpunk" "operaponk" "symphonypunk" "orchestrapunk" 
-   "bandpunk" "rockpunk" "poppunk" "jazzpunk" "bluespunk" "folkpunk" "countrypunk" "reggaepunk" 
-   "hiphoppunk" "rappunk" "dancepunk" "ballroomponk" "balletpunk" "tappunk" "jazzpunk" 
-   "swingpunk" "discpunk" "ravepunk" "clubpunk" "partypunk" "festivalpunk" "carnivalpunk" 
-   "circuspunk" "fairpunk" "marketpunk" "bazaarpunk" "mallpunk" "shoppunk" "storepunk" 
-   "boutiquepunk" "restaurantpunk" "cafepunk" "barpunk" "pubpunk" "tavernpunk" "innpunk" 
-   "hotelpunk" "motelpunk" "bedandbreakfastpunk" "hostelpunk" "dormitorypunk" "apartmentpunk" 
-   "condopunk" "housepunk" "mansionpunk" "palacepunk" "castlepunk" "fortresspunk" "towerpunk" 
-   "dungeon"])
+  ["stone" "marble" "granite" "limestone" "sandstone" "slate" "brick" "wood" "timber" "metal"
+   "iron" "steel" "copper" "bronze" "brass" "gold" "silver" "crystal" "glass" "ice" "bone"
+   "obsidian" "clay" "mud" "dirt" "earth" "sand" "rock" "pebble" "gravel" "concrete" "plaster"
+   "stucco" "mortar" "cement" "adobe" "terracotta" "ceramic" "porcelain" "tile" "mosaic"
+   "ivory" "shell" "coral" "amber" "jade" "quartz" "diamond" "emerald" "ruby" "sapphire"
+   "opal" "pearl" "onyx" "agate" "jasper" "turquoise" "lapis lazuli" "malachite" "amethyst"
+   "topaz" "garnet" "aquamarine" "moonstone" "sunstone" "bloodstone" "hematite"
+   "flint" "chalk" "coal" "charcoal" "basalt" "pumice" "schist" "gneiss" "shale" "dolomite"
+   "travertine" "soapstone" "alabaster" "porphyry" "quartzite" "feldspar" "mica" "gypsum"
+   "volcanic rock" "fossilized wood" "petrified wood" "hardwood" "softwood" "oak" "pine" "cedar"
+   "redwood" "ebony" "mahogany" "teak" "bamboo" "wicker" "rattan" "thatch"])
 
 (def ceiling-descriptions
   ["The ceiling arches high overhead."
@@ -556,37 +488,14 @@
           (if (neg? next-index)
             formatted
             (recur
-              (str (.substring formatted 0 next-index) 
-                   (first args-left) 
+              (str (.substring formatted 0 next-index)
+                   (first args-left)
                    (.substring formatted (+ next-index (count placeholder))))
               (rest args-left)
               (+ next-index (count (str (first args-left)))))))))))
 
-(defn generate-room-description []
-  (let [templates [;; Basic templates with light, sound, and features
-                   "You enter a %s %s room with %s walls, %s floor, and %s. %s %s %s"
-                   "Before you lies a %s %s chamber. %s %s %s %s %s"
-                   "The passage opens into a %s %s hall with %s. %s %s %s %s"
-                   "You find yourself in a %s %s chamber. %s %s %s %s %s"
-                   "A %s %s room stretches before you. %s %s %s %s %s"
-                   
-                   ;; More complex templates with light, sound, and features
-                   "You step into a %s, %s room. %s The %s walls surround a %s floor. %s %s %s"
-                   "The corridor leads to a %s %s chamber with %s walls and %s floor. %s %s %s %s"
-                   "A %s, %s room extends ahead. %s %s %s %s %s"
-                   "You enter a %s chamber that appears to be %s in shape. %s %s %s %s %s"
-                   "Before you is a %s, %s hall. %s The %s floor stretches beneath %s walls. %s %s %s"
-                   
-                   ;; Templates with features prominently mentioned
-                   "You discover a %s %s room. %s %s %s In the center of the room, %s. %s"
-                   "A %s, %s chamber opens before you. %s %s %s The most striking feature is %s. %s"
-                   "You enter a %s room that is roughly %s in shape. %s %s %s Notably, %s. %s"
-                   "The passage reveals a %s, %s chamber. %s %s %s Your attention is drawn to %s. %s"
-                   "A %s %s room lies ahead. %s %s %s Dominating the space is %s. %s"]
-        
-        template (rand-nth templates)
-        
-        size (rand-nth room-sizes)
+(defn generate-room-elements []
+  (let [size (rand-nth room-sizes)
         shape (rand-nth room-shapes)
         adjective (rand-nth room-adjectives)
         material (rand-nth room-materials)
@@ -597,45 +506,49 @@
         light (rand-nth light-descriptions)
         sound (rand-nth sound-descriptions)
         feature (rand-nth feature-descriptions)
-        
-        ;; Extract just the feature description without the leading "A" or "An" if present
-        feature-desc (if (or (.startsWith feature "A ") (.startsWith feature "An "))
-                       (.substring feature (if (.startsWith feature "A ") 2 3))
-                       feature)
-        
-        ;; Select random elements to fill in the template based on the number of placeholders
-        elements (case (count (re-seq #"%s" template))
-                   3 [size shape wall]
-                   4 [size shape wall floor]
-                   5 [size shape wall floor atmosphere]
-                   6 [size shape wall floor atmosphere light]
-                   7 [size shape wall floor atmosphere light sound]
-                   8 [size shape wall floor atmosphere light sound feature-desc]
-                   ;; Default case
-                   [size shape adjective material ceiling])]
-    
-    (apply format-str template elements)))
 
-;; Function to combine descriptions for more variety
-(defn combine-descriptions []
-  (let [base-description (generate-room-description)
-        should-add-extra (> (rand) 0.6) ;; 40% chance to add extra details
-        extra-detail-type (rand-nth [:sound :light :feature :feature]) ;; Feature has double weight
-        extra-detail (when should-add-extra
-                       (case extra-detail-type
-                         :sound (str " " (rand-nth sound-descriptions))
-                         :light (str " " (rand-nth light-descriptions))
-                         :feature (let [feature (rand-nth feature-descriptions)]
-                                    (str " Additionally, " 
-                                         (if (or (.startsWith feature "A ") (.startsWith feature "An "))
-                                           (.toLowerCase (.substring feature 0 1)) 
-                                           feature)))))]
-    (if should-add-extra
-      (str base-description extra-detail)
-      base-description)))
+        ;; Room types that might be found in a dungeon
+        room-types ["chamber" "hall" "room" "vault" "gallery" "crypt" "sanctum" "alcove"
+                   "cavern" "chapel" "laboratory" "library" "study" "workshop" "armory"
+                   "barracks" "kitchen" "dining hall" "throne room" "guardroom" "prison cell"
+                   "torture chamber" "storage room" "treasury" "observatory" "ritual space"
+                   "meditation chamber" "training area" "sleeping quarters" "antechamber"]
+
+        ;; Enhanced description templates without material mentions
+        basic-templates ["You enter a %s %s %s. The air feels %s."
+                         "Before you lies a %s %s %s. It appears %s and %s."
+                         "The passage opens into a %s %s %s. The space feels %s."
+                         "You find yourself in a %s %s %s. It has a %s atmosphere."
+                         "A %s %s %s stretches before you. The area seems %s."
+                         "You step into a %s, %s %s. The space is noticeably %s."
+                         "The corridor leads to a %s %s %s. It has a distinctly %s feel."
+                         "A %s, %s %s extends ahead. The area is remarkably %s."
+                         "You enter a %s %s that appears to be %s in shape. It feels %s."
+                         "Before you is a %s, %s %s. The space has a %s quality."]
+
+        room-type (rand-nth room-types)
+        template-index (rand-int (count basic-templates))
+        basic-template (nth basic-templates template-index)
+
+        ;; Create description with size, shape, room type, and adjective
+        basic-description (format-str basic-template size shape room-type adjective)]
+
+    {:basic-description basic-description
+     :size size
+     :shape shape
+     :adjective adjective
+     :material material
+     :ceiling ceiling
+     :wall wall
+     :floor floor
+     :atmosphere atmosphere
+     :light light
+     :sound sound
+     :feature feature}))
 
 (defn app []
-  (let [embed-mode (:embed-mode @state)]
+  (let [embed-mode (:embed-mode @state)
+        room-elements (:room-elements @state)]
     [:main {:class (when embed-mode "embed-mode")}
      (when-not embed-mode
        [:header
@@ -647,13 +560,61 @@
        [:h1 "Dungeon Room Generator"])
 
      [:div.generator-container
-      (if-let [description (:room-description @state)]
-        [:div.room-description description]
-        [:div.room-description "Click the button to generate a dungeon room description."])
       [:div.generator-buttons
        [:button
-        {:on-click #(swap! state assoc :room-description (combine-descriptions))}
-        "Generate New Room"]]
+        {:on-click #(swap! state assoc :room-elements (generate-room-elements))}
+        "Generate New Room Elements"]
+       (when room-elements
+         [:button
+          {:on-click (fn []
+                       (let [text (str "Room Description: " (:basic-description room-elements) "\n\n"
+                                       "--- Room Basics ---\n"
+                                       "Size: " (:size room-elements) "\n"
+                                       "Shape: " (:shape room-elements) "\n"
+                                       "Atmosphere: " (:adjective room-elements) "\n"
+                                       "Material: " (:material room-elements) "\n\n"
+                                       "--- Room Features ---\n"
+                                       "Ceiling: " (:ceiling room-elements) "\n"
+                                       "Walls: " (:wall room-elements) "\n"
+                                       "Floor: " (:floor room-elements) "\n\n"
+                                       "--- Ambience ---\n"
+                                       "Atmosphere: " (:atmosphere room-elements) "\n"
+                                       "Light: " (:light room-elements) "\n"
+                                       "Sound: " (:sound room-elements) "\n\n"
+                                       "--- Special Feature ---\n"
+                                       "Feature: " (:feature room-elements))]
+                         (copy-to-clipboard text)
+                         (swap! state assoc :copied true)
+                         (js/setTimeout #(swap! state assoc :copied false) 2000)))}
+          (if (:copied @state) "Copied!" "Copy All")])]
+      (if room-elements
+        [:div
+         [:div.room-description (:basic-description room-elements)]
+         [:div.room-elements
+          #_ [:div.element-section
+              [:h3 "Room Basics"]
+              [:div.element-item [:span.element-label "Size:"] [:span.element-value (:size room-elements)]]
+              [:div.element-item [:span.element-label "Shape:"] [:span.element-value (:shape room-elements)]]
+              [:div.element-item [:span.element-label "Atmosphere:"] [:span.element-value (:adjective room-elements)]]
+              [:div.element-item [:span.element-label "Material:"] [:span.element-value (:material room-elements)]]]
+
+          [:div.element-section
+           [:h3 "Room Features"]
+           [:div.element-item [:span.element-label "Ceiling:"] [:span.element-value (:ceiling room-elements)]]
+           [:div.element-item [:span.element-label "Walls:"] [:span.element-value (:wall room-elements)]]
+           [:div.element-item [:span.element-label "Floor:"] [:span.element-value (:floor room-elements)]]]
+
+          [:div.element-section
+           [:h3 "Ambience"]
+           [:div.element-item [:span.element-label "Atmosphere:"] [:span.element-value (:atmosphere room-elements)]]
+           [:div.element-item [:span.element-label "Light:"] [:span.element-value (:light room-elements)]]
+           [:div.element-item [:span.element-label "Sound:"] [:span.element-value (:sound room-elements)]]]]
+
+         [:div.room-description
+          [:div.element-item [:span.element-label "Feature:"] [:span.element-value (:feature room-elements)]]]]
+
+        [:div.room-description "Click the button to generate dungeon room elements."])
+
       (when-not embed-mode
         [:div.attribution "A procedurally generated dungeon room description"])
       (when-not embed-mode
@@ -673,9 +634,9 @@
      (when-not embed-mode
        [:div.footer-bg])]))
 
-;; Initialize with a random room description
+;; Initialize with random room elements
 (defn init []
-  (swap! state assoc :room-description (combine-descriptions))
+  (swap! state assoc :room-elements (generate-room-elements))
   (rdom/render [app] (.getElementById js/document "app")))
 
 ;; Call init function

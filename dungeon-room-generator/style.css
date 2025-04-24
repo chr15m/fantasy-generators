@@ -80,9 +80,51 @@ h1 {
   margin: 1rem 0;
   text-align: left;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   line-height: 1.6;
   min-height: 100px;
+  font-weight: bold;
+  border-left: 4px solid #8b4513;
+  font-style: italic;
+}
+
+.room-elements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.element-section {
+  flex: 1;
+  min-width: 250px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.element-section h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  border-bottom: 1px solid #8b4513;
+  padding-bottom: 0.3rem;
+  font-size: 1.1rem;
+}
+
+.element-item {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.element-label {
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.element-value {
+  font-style: italic;
 }
 
 .attribution {
@@ -127,7 +169,7 @@ button {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 1rem 0;
+  margin: 0;
 }
 
 button:hover {
