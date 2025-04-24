@@ -563,26 +563,26 @@
               (+ next-index (count (str (first args-left)))))))))))
 
 (defn generate-room-description []
-  (let [templates [;; Basic templates
-                   "You enter a %s %s room with %s walls, %s floor, and %s. %s"
-                   "Before you lies a %s %s chamber. %s %s %s"
-                   "The passage opens into a %s %s hall with %s. %s %s"
-                   "You find yourself in a %s %s chamber. %s %s %s"
-                   "A %s %s room stretches before you. %s %s %s"
+  (let [templates [;; Basic templates with light, sound, and features
+                   "You enter a %s %s room with %s walls, %s floor, and %s. %s %s %s"
+                   "Before you lies a %s %s chamber. %s %s %s %s %s"
+                   "The passage opens into a %s %s hall with %s. %s %s %s %s"
+                   "You find yourself in a %s %s chamber. %s %s %s %s %s"
+                   "A %s %s room stretches before you. %s %s %s %s %s"
                    
-                   ;; More complex templates
-                   "You step into a %s, %s room. %s The %s walls surround a %s floor. %s"
-                   "The corridor leads to a %s %s chamber with %s walls and %s floor. %s %s"
-                   "A %s, %s room extends ahead. %s %s %s"
-                   "You enter a %s chamber that appears to be %s in shape. %s %s %s"
-                   "Before you is a %s, %s hall. %s The %s floor stretches beneath %s walls. %s"
+                   ;; More complex templates with light, sound, and features
+                   "You step into a %s, %s room. %s The %s walls surround a %s floor. %s %s %s"
+                   "The corridor leads to a %s %s chamber with %s walls and %s floor. %s %s %s %s"
+                   "A %s, %s room extends ahead. %s %s %s %s %s"
+                   "You enter a %s chamber that appears to be %s in shape. %s %s %s %s %s"
+                   "Before you is a %s, %s hall. %s The %s floor stretches beneath %s walls. %s %s %s"
                    
-                   ;; Templates with features
-                   "You discover a %s %s room. %s %s %s %s"
-                   "A %s, %s chamber opens before you. %s %s %s %s"
-                   "You enter a %s room that is roughly %s in shape. %s %s %s %s"
-                   "The passage reveals a %s, %s chamber. %s %s %s %s"
-                   "A %s %s room lies ahead. %s %s %s %s"]
+                   ;; Templates with features prominently mentioned
+                   "You discover a %s %s room. %s %s %s In the center of the room, %s. %s"
+                   "A %s, %s chamber opens before you. %s %s %s The most striking feature is %s. %s"
+                   "You enter a %s room that is roughly %s in shape. %s %s %s Notably, %s. %s"
+                   "The passage reveals a %s, %s chamber. %s %s %s Your attention is drawn to %s. %s"
+                   "A %s %s room lies ahead. %s %s %s Dominating the space is %s. %s"]
         
         template (rand-nth templates)
         
@@ -598,16 +598,41 @@
         sound (rand-nth sound-descriptions)
         feature (rand-nth feature-descriptions)
         
-        ;; Select random elements to fill in the template
+        ;; Extract just the feature description without the leading "A" or "An" if present
+        feature-desc (if (or (.startsWith feature "A ") (.startsWith feature "An "))
+                       (.substring feature (if (.startsWith feature "A ") 2 3))
+                       feature)
+        
+        ;; Select random elements to fill in the template based on the number of placeholders
         elements (case (count (re-seq #"%s" template))
                    3 [size shape wall]
                    4 [size shape wall floor]
                    5 [size shape wall floor atmosphere]
-                   6 [size shape wall floor atmosphere feature]
+                   6 [size shape wall floor atmosphere light]
+                   7 [size shape wall floor atmosphere light sound]
+                   8 [size shape wall floor atmosphere light sound feature-desc]
                    ;; Default case
                    [size shape adjective material ceiling])]
     
     (apply format-str template elements)))
+
+;; Function to combine descriptions for more variety
+(defn combine-descriptions []
+  (let [base-description (generate-room-description)
+        should-add-extra (> (rand) 0.6) ;; 40% chance to add extra details
+        extra-detail-type (rand-nth [:sound :light :feature :feature]) ;; Feature has double weight
+        extra-detail (when should-add-extra
+                       (case extra-detail-type
+                         :sound (str " " (rand-nth sound-descriptions))
+                         :light (str " " (rand-nth light-descriptions))
+                         :feature (let [feature (rand-nth feature-descriptions)]
+                                    (str " Additionally, " 
+                                         (if (or (.startsWith feature "A ") (.startsWith feature "An "))
+                                           (.toLowerCase (.substring feature 0 1)) 
+                                           feature)))))]
+    (if should-add-extra
+      (str base-description extra-detail)
+      base-description)))
 
 (defn app []
   (let [embed-mode (:embed-mode @state)]
@@ -627,7 +652,7 @@
         [:div.room-description "Click the button to generate a dungeon room description."])
       [:div.generator-buttons
        [:button
-        {:on-click #(swap! state assoc :room-description (generate-room-description))}
+        {:on-click #(swap! state assoc :room-description (combine-descriptions))}
         "Generate New Room"]]
       (when-not embed-mode
         [:div.attribution "A procedurally generated dungeon room description"])
@@ -650,7 +675,7 @@
 
 ;; Initialize with a random room description
 (defn init []
-  (swap! state assoc :room-description (generate-room-description))
+  (swap! state assoc :room-description (combine-descriptions))
   (rdom/render [app] (.getElementById js/document "app")))
 
 ;; Call init function
