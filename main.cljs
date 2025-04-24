@@ -37,7 +37,7 @@
     [card "TAVERN NAME" "./tavern-name-generator/card.jpg" "./tavern-name-generator/"]
     [card "CHARACTER" "./character-generator/card.jpg" "./character-generator/"]
     [card "NPC" "./npc-generator/card.jpg" "./npc-generator/"]
-    ;[card "DUNGEON" "https://placehold.co/300x300/e0e0e0/333?text=Dungeon" "#"]
+    [card "DUNGEON ROOM" "./dungeon-room-generator/card.jpg" "./dungeon-room-generator/"]
     ]
 
    [:footer [:a {:href "https://mccormick.cx" :style {:color "#5d1a0f" :text-decoration "none" :font-weight "bold"}} "Made with 🤖 by Chris McCormick"]]
